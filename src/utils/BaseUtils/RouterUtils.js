@@ -4,20 +4,14 @@ import router from "../../router/router";
 class RouterUtils {
   static routes = {
     auth: {
-      LOGIN: "login",
-      ADMIN_LOGIN: "admin-login",
-      REGISTER: "register",
-      FORGOT_PASSWORD: "resetprofile"
+      LOGIN: "login"
     },
-    rewards: {},
-    reports: {},
-
+    expense: {
+      CREATE_EXPENSE: "create-expense"
+    },
     DASHBOARD: "dashboard",
-    company: {
-      ALL_COMPANIES: "all-companies"
-    },
-    employee: {
-      ADD_EMPLOYEE: "employee"
+    policy: {
+      CREATE_POLICY: "create-policy"
     }
   };
   static changeBaseRouteTo(targetRoute) {

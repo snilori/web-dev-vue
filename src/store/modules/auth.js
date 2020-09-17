@@ -1,142 +1,123 @@
 import AuthServices from "../../services/AuthServices";
-const authService = new AuthServices();
-import RouterUtils from "../../utils/BaseUtils/RouterUtils";
-import StoreUtils from "../../utils/BaseUtils/StoreUtils";
 import LoaderUtils from "../../utils/BaseUtils/LoaderUtils";
-import NotificationUtils from "../../utils/BaseUtils/NotificationUtils";
-import AppUtils from "../../utils/BaseUtils/AppUtils";
+import RouterUtils from "../../utils/BaseUtils/RouterUtils";
+import form from "bootstrap-vue/esm/mixins/form";
+const authService = new AuthServices();
+
+import StoreUtils from "../../utils/BaseUtils/StoreUtils";
 
 export const namespaced = true;
 
 export const state = {
-  businessId: "",
-  token: "Key ...hfhfgfhfjhfj9484874734..kdkhd2345jdfkdj36472*Khgioojss222..."
-  // token: "Token 400f363acbc6b33bc60c8b273cabc9e6790d81d0"
+  userOptions: {
+    requestId: "",
+    categoryId: "",
+    insuranceCompanyId: "",
+    username: ""
+  }
 };
 
 export const getters = {
-  getAuthToken: state => {
-    return state.token;
+  getUserOptions: state => {
+    return state.userOptions;
   },
-  getAuthBusinessId: state => {
-    return state.businessId;
+  getRequestId: state => {
+    return state.userOptions.requestId;
+  },
+  getCategoryId: state => {
+    return state.userOptions.categoryId;
+  },
+  getInsuranceCompanyId: state => {
+    return state.userOptions.insuranceCompanyId;
+  },
+  getUsername: state => {
+    return state.userOptions.username;
   }
 };
 
 export const mutations = {
-  SET_AUTH_TOKEN(state, payload) {
-    state.token = `Token ${payload}`;
-  },
-  RESET_AUTH_TOKEN(state) {
-    state.token = `Key ...hfhfgfhfjhfj9484874734..kdkhd2345jdfkdj36472*Khgioojss222...`;
-  },
-  SET_AUTH_BUSINESS_ID(state, payload) {
-    state.businessId = payload;
+  SET_USER_OPTIONS(state, payload) {
+    state.userOptions = payload;
   }
 };
 
 export const actions = {
-  adminLogin(undefined, payload) {
-    let successAction = responseData => {
-      StoreUtils.dispatch("auth/successfulLogin", {
-        userInfo: responseData,
-        role: AppUtils.parameters.user.roles.CHOOSE_LIFE_ADMIN
-      });
-    };
-
-    return authService.adminLogin(
-      payload,
-      successAction,
-      LoaderUtils.types.BLOCKING
+  registrationComplete() {
+    let formBody = StoreUtils.rootGetters(
+        StoreUtils.getters.form.GET_FORM_BODY
     );
-  },
 
-  successfulLogin(undefined, { userInfo, role }) {
-    StoreUtils.commit("auth/SET_AUTH_TOKEN", userInfo.token);
-    StoreUtils.commit("user/SET_USER_INFO", userInfo);
-    StoreUtils.commit("user/SET_USER_ROLE", role);
-    RouterUtils.changeBaseRouteTo(RouterUtils.routes.DASHBOARD);
-  },
-
-  register(undefined, { formBody1, formBody2 }) {
     let payload = {
-      ...formBody1,
-      ...formBody2
-    };
-    let successAction = () => {
-      let notificationModalBody = {
-        type: NotificationUtils.type.SUCCESS, //error, success, warning
-        mode: NotificationUtils.mode.YES, // default, yes-no
-        title: "",
-        message:
-          "Your initial registration has been successfully competed!\n" +
-          "A Choose Life representative will contact you to complete your \n" +
-          "registration and to begin onboarding your organization.",
-        noAction: () => {
-          NotificationUtils.closeNotificationModal();
-        },
-        noActionTitle: "No",
-        yesAction: () => {
-          NotificationUtils.closeNotificationModal();
-        },
-        yesActionTitle: "Continue"
-      };
-      NotificationUtils.showNotificationModal(notificationModalBody);
-    };
-    return authService.register(
-      payload,
-      successAction,
-      LoaderUtils.types.BLOCKING
-    );
-  },
+      username: formBody.username,
+      token: formBody.token,
+      password: formBody.password,
+      email: formBody.email,
+      uniqueRef:formBody.uniqueRef
 
-  logIn(undefined, payload) {
+    };
+
     let successAction = responseData => {
-      let userRole = responseData.user_role;
-      StoreUtils.dispatch("auth/successfulLogin", {
-        userInfo: responseData,
-        role: userRole
-      });
+      //Save user info to the store
+
+      StoreUtils.dispatch("form/resetForm");
+
+      RouterUtils.changeRouteTo(RouterUtils.routes.DASHBOARD);
+
     };
-    return authService.logIn(
-      payload,
-      successAction,
-      LoaderUtils.types.BLOCKING
+
+    authService.registrationComplete(
+        payload,
+        successAction,
+        LoaderUtils.types.BLOCKING
     );
   },
 
-  logOut() {
-    StoreUtils.commit("auth/RESET_AUTH_TOKEN");
-    let userRole = StoreUtils.rootGetters("user/getUserRole");
-    if (
-      userRole === AppUtils.parameters.user.roles.COMPANY_ADMIN ||
-      userRole === AppUtils.parameters.user.roles.COMPANY_USER
-    ) {
-      RouterUtils.changeBaseRouteTo(RouterUtils.routes.auth.LOGIN);
-    }
-    if (
-      userRole === AppUtils.parameters.user.roles.CHOOSE_LIFE_ADMIN ||
-      userRole === AppUtils.parameters.user.roles.CHOOSE_LIFE_USER
-    ) {
-      RouterUtils.changeBaseRouteTo(RouterUtils.routes.auth.ADMIN_LOGIN);
-    }
-  },
+  registrationInit() {
+    let formBody = StoreUtils.rootGetters(
+      StoreUtils.getters.form.GET_FORM_BODY
+    );
 
-  createProfile(undefined, { formBody1, formBody2 }) {
     let payload = {
-      ...formBody1,
-      ...formBody2,
-      business_id: StoreUtils.rootGetters("auth/getAuthBusinessId")
+      email: formBody.email,
+      firstName: formBody.firstName,
+      lastName: formBody.lastName
     };
 
-    let successAction = () => {
-      RouterUtils.changeBaseRouteTo(RouterUtils.routes.auth.LOGIN);
+    let successAction = responseData => {
+      //Save user info to the store
+      StoreUtils.commit("form/BUILD_FORM_BODY", {
+        uniqueRef: responseData.uniqueRef
+      });
+
+      StoreUtils.commit("form/INCREASE_FORM_STAGE_BY_ONE");
     };
 
-    return authService.createProfile(
+    authService.registrationInit(
       payload,
       successAction,
       LoaderUtils.types.BLOCKING
     );
+  },
+
+  login() {
+    let formBody = StoreUtils.rootGetters(
+      StoreUtils.getters.form.GET_FORM_BODY
+    );
+    console.log(formBody);
+    let payload = {
+      userID: formBody.userID,
+      password: formBody.password
+    };
+
+    let successAction = responseData => {
+      //Save user info to the store
+      StoreUtils.commit("user/SET_USER_INFO", responseData);
+
+      StoreUtils.dispatch("form/resetForm");
+
+      RouterUtils.changeRouteTo(RouterUtils.routes.DASHBOARD);
+    };
+
+    authService.login(payload, successAction, LoaderUtils.types.BLOCKING);
   }
 };

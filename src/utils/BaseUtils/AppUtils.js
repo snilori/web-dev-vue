@@ -4,30 +4,31 @@ import StoreUtils from "./StoreUtils";
 class AppUtils {
   static urls = {
     auth: {
-      LOGIN: "/enroll/login",
-      REGISTER: "/enroll/create_company",
-      ADMIN_LOGIN: "/admin/login",
-      CREATE_PROFILE: "/enroll/create_profile"
+      LOGIN: "/login",
+      REGISTRATION_INIT: "/registrationInit",
+      REGISTRATION_COMPLETE: "/registrationComplete"
     },
-    company: {
-      CREATE_COMPANY: "/enroll/create_company",
-      APPROVE_COMPANY: "/admin/update_company",
-      FETCH_COMPANIES: "/admin/get_pending_approval"
+    expense: {
+      CREATE_EXPENSE: "/createExpense",
+      FETCH_EXPENSE: "/getExpense"
     },
-    employee: {
-      ADD_EMPLOYEE: "/enroll/single_agent_upload"
+    todo: {
+      CREATE_TODO: "/createTodo",
+      DELETE_TODO: "/deleteTodo",
+      UPDATE_TODO: "/updateTodo",
+      FETCH_TODOLIST: "/todolist",
+    },
+    autoGenius: {
+      health: {
+        FETCH_ALL_PROVIDERS: "/autogenius/hospital",
+        FETCH_ALL_PRODUCTS: "/autogenius/products",
+        INITIATE_POLICY: "/autogeniusinitiatepolicy"
+      }
     }
   };
 
   static parameters = {
-    user: {
-      roles: {
-        CHOOSE_LIFE_ADMIN: "choose-life-admin",
-        CHOOSE_LIFE_USER: "choose-life-user",
-        COMPANY_ADMIN: "company-admin",
-        COMPANY_USER: "company-user"
-      }
-    }
+    user: {}
   };
 
   static getDefaultPayload = {

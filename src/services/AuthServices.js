@@ -2,7 +2,7 @@ import BaseService from "./BaseService";
 import AppUtils from "../utils/BaseUtils/AppUtils";
 
 class AuthServices extends BaseService {
-  createProfile(
+  registrationComplete(
     payload,
     successAction,
     loaderType,
@@ -12,7 +12,7 @@ class AuthServices extends BaseService {
     getErrorMessage
   ) {
     return this.makePostRequest(
-      AppUtils.urls.auth.CREATE_PROFILE,
+      AppUtils.urls.auth.REGISTRATION_COMPLETE,
       payload,
       successAction,
       loaderType,
@@ -23,7 +23,7 @@ class AuthServices extends BaseService {
     );
   }
 
-  adminLogin(
+  registrationInit(
     payload,
     successAction,
     loaderType,
@@ -33,7 +33,7 @@ class AuthServices extends BaseService {
     getErrorMessage
   ) {
     return this.makePostRequest(
-      AppUtils.urls.auth.ADMIN_LOGIN,
+      AppUtils.urls.auth.REGISTRATION_INIT,
       payload,
       successAction,
       loaderType,
@@ -44,28 +44,7 @@ class AuthServices extends BaseService {
     );
   }
 
-  register(
-    payload,
-    successAction,
-    loaderType,
-    errorType,
-    showSuccessMessage,
-    successCondition,
-    getErrorMessage
-  ) {
-    return this.makePostRequest(
-      AppUtils.urls.auth.REGISTER,
-      payload,
-      successAction,
-      loaderType,
-      errorType,
-      showSuccessMessage,
-      successCondition,
-      getErrorMessage
-    );
-  }
-
-  logIn(
+  login(
     payload,
     successAction,
     loaderType,
